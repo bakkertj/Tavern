@@ -26,8 +26,17 @@ ST_PASSWORD=${ST_PASSWORD:?Set ST_PASSWORD in the pod env vars}
 step() {
   local name=$1
   if [ -f "$STEPS/$name" ]; then
-    echo "=== [skip] $name ==="
-    return 0
+    # If a step_<name>_check function exists, run it to confirm the artifact
+    # is still present. If the check fails, the flag is stale (artifact was
+    # deleted, flag was touched prematurely, etc.) -- re-run the step instead
+    # of trusting the flag blindly.
+    if declare -F "step_${name}_check" >/dev/null && ! "step_${name}_check"; then
+      echo "=== [stale] $name (flag set but artifact missing) -- re-running ==="
+      rm -f "$STEPS/$name"
+    else
+      echo "=== [skip] $name ==="
+      return 0
+    fi
   fi
   echo "=== [run]  $name ==="
   "step_$name"
@@ -53,6 +62,17 @@ git_clone_retry() {
   echo "ERROR: git clone $url failed after 3 attempts" >&2
   return 1
 }
+
+# Per-step validators: if any of these returns non-zero when its flag is set,
+# `step` treats the flag as stale and re-runs the step. Recovers from someone
+# deleting an artifact, or a flag being touched prematurely.
+step_clone_tabby_check()        { [ -d "$WORKSPACE/tabbyAPI/.git" ]; }
+step_venv_tabby_check()         { [ -x "$WORKSPACE/tabbyAPI/venv/bin/python" ]; }
+step_config_tabby_check()       { [ -f "$WORKSPACE/tabbyAPI/config.yml" ]; }
+step_download_model_check()     { [ -d "$WORKSPACE/models/$MODEL_NAME" ]; }
+step_clone_sillytavern_check()  { [ -d "$WORKSPACE/SillyTavern/.git" ]; }
+step_npm_sillytavern_check()    { [ -d "$WORKSPACE/SillyTavern/node_modules" ]; }
+step_config_sillytavern_check() { [ -f "$WORKSPACE/SillyTavern/config.yaml" ]; }
 
 step_apt() {
   apt-get update -qq
