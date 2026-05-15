@@ -34,6 +34,26 @@ step() {
   touch "$STEPS/$name"
 }
 
+# Clone a git repo shallow (--depth=1) with up to 3 retries. MooseFS / network
+# hiccups during clone surface as "inflate: data stream error" -- a clean retry
+# usually fixes it. Removes any partial clone before each attempt.
+git_clone_retry() {
+  local url=$1
+  local dest=$2
+  shift 2
+  local attempt
+  for attempt in 1 2 3; do
+    rm -rf "$dest"
+    if git clone --depth=1 "$@" "$url" "$dest"; then
+      return 0
+    fi
+    echo "    git clone $url failed (attempt $attempt/3), retrying in 5s..." >&2
+    sleep 5
+  done
+  echo "ERROR: git clone $url failed after 3 attempts" >&2
+  return 1
+}
+
 step_apt() {
   apt-get update -qq
   apt-get install -y -qq curl git build-essential ca-certificates nano
@@ -44,8 +64,7 @@ step_apt() {
 step_clone_tabby() {
   cd "$WORKSPACE"
   if [ ! -d tabbyAPI/.git ]; then
-    rm -rf tabbyAPI
-    git clone https://github.com/theroyallab/tabbyAPI
+    git_clone_retry https://github.com/theroyallab/tabbyAPI tabbyAPI
   fi
 }
 
@@ -109,8 +128,7 @@ step_download_model() {
 step_clone_sillytavern() {
   cd "$WORKSPACE"
   if [ ! -d SillyTavern/.git ]; then
-    rm -rf SillyTavern
-    git clone https://github.com/SillyTavern/SillyTavern -b staging
+    git_clone_retry https://github.com/SillyTavern/SillyTavern SillyTavern -b staging
   fi
 }
 
