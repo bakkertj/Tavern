@@ -129,9 +129,16 @@ model:
   model_dir: $WORKSPACE/models
   model_name: $MODEL_NAME
   inline_model_loading: true
-  max_seq_len: 32768
-  cache_mode: Q6
+  max_seq_len: 16384
+  cache_mode: FP16
   gpu_split_auto: true
+  tensor_parallel: false   
+  chunk_size: 2048
+  draft_model:
+     draft_model_dir: /workspace/models
+     draft_model_name: Qwen2.5-1.5B-Instruct-exl2-6.0bpw
+     draft_rope_scale: 1.0
+     draft_cache_mode: FP16 
 developer:
   cuda_malloc_backend: true
 TABBYCFG
@@ -144,6 +151,18 @@ step_download_model() {
   HF_HUB_ENABLE_HF_TRANSFER=1 hf download "$MODEL_REPO" \
     --local-dir "$WORKSPACE/models/$MODEL_NAME"
 }
+
+step_download_draft() {
+    DRAFT_REPO=${DRAFT_REPO:-cgus/Qwen2.5-1.5B-Instruct-exl2}
+    DRAFT_BRANCH=${DRAFT_BRANCH:-6.5bpw-h8}
+    DRAFT_NAME=$(basename "$DRAFT_REPO")
+    HF_HUB_ENABLE_HF_TRANSFER=1 hf download "$DRAFT_REPO" \
+        --revision "$DRAFT_BRANCH" \
+        --local-dir "$WORKSPACE/models/$DRAFT_NAME"
+}
+
+
+
 
 step_clone_sillytavern() {
   cd "$WORKSPACE"
@@ -183,6 +202,7 @@ if [ ! -f "$SETUP_FLAG" ]; then
   step venv_tabby
   step config_tabby
   step download_model
+  step download_draft
   step clone_sillytavern
   step npm_sillytavern
   step config_sillytavern
