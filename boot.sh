@@ -70,6 +70,7 @@ step_clone_tabby_check()        { [ -d "$WORKSPACE/tabbyAPI/.git" ]; }
 step_venv_tabby_check()         { [ -x "$WORKSPACE/tabbyAPI/venv/bin/python" ]; }
 step_config_tabby_check()       { [ -f "$WORKSPACE/tabbyAPI/config.yml" ]; }
 step_download_model_check()     { [ -d "$WORKSPACE/models/$MODEL_NAME" ]; }
+step_download_draft_check()     { [ -d "$WORKSPACE/models/Qwen2.5-1.5B-Instruct-exl2-6.0bpw" ]; }
 step_clone_sillytavern_check()  { [ -d "$WORKSPACE/SillyTavern/.git" ]; }
 step_npm_sillytavern_check()    { [ -d "$WORKSPACE/SillyTavern/node_modules" ]; }
 step_config_sillytavern_check() { [ -f "$WORKSPACE/SillyTavern/config.yaml" ]; }
