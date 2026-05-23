@@ -17,6 +17,14 @@ export NPM_CONFIG_CACHE=$WORKSPACE/npm_cache
 MODEL_REPO=${MODEL_REPO:-DBMe/EVA-Qwen2.5-72B-v0.2-4.48bpw-h6-exl2}
 MODEL_NAME=$(basename "$MODEL_REPO")
 
+# Draft model for speculative decoding. DRAFT_NAME is the local dir name and is
+# the single source of truth shared by the download, the validator, and
+# config.yml. It includes the branch so it documents the quant and so changing
+# the branch points everything at a fresh dir.
+DRAFT_REPO=${DRAFT_REPO:-cgus/Qwen2.5-1.5B-Instruct-exl2}
+DRAFT_BRANCH=${DRAFT_BRANCH:-6.5bpw-h8}
+DRAFT_NAME=${DRAFT_NAME:-$(basename "$DRAFT_REPO")-$DRAFT_BRANCH}
+
 ST_USERNAME=${ST_USERNAME:-admin}
 ST_PASSWORD=${ST_PASSWORD:?Set ST_PASSWORD in the pod env vars}
 
@@ -70,7 +78,7 @@ step_clone_tabby_check()        { [ -d "$WORKSPACE/tabbyAPI/.git" ]; }
 step_venv_tabby_check()         { [ -x "$WORKSPACE/tabbyAPI/venv/bin/python" ]; }
 step_config_tabby_check()       { [ -f "$WORKSPACE/tabbyAPI/config.yml" ]; }
 step_download_model_check()     { [ -d "$WORKSPACE/models/$MODEL_NAME" ]; }
-step_download_draft_check()     { [ -d "$WORKSPACE/models/Qwen2.5-1.5B-Instruct-exl2-6.0bpw" ]; }
+step_download_draft_check()     { [ -d "$WORKSPACE/models/$DRAFT_NAME" ]; }
 step_clone_sillytavern_check()  { [ -d "$WORKSPACE/SillyTavern/.git" ]; }
 step_npm_sillytavern_check()    { [ -d "$WORKSPACE/SillyTavern/node_modules" ]; }
 step_config_sillytavern_check() { [ -f "$WORKSPACE/SillyTavern/config.yaml" ]; }
@@ -136,10 +144,10 @@ model:
   tensor_parallel: false   
   chunk_size: 2048
   draft_model:
-     draft_model_dir: /workspace/models
-     draft_model_name: Qwen2.5-1.5B-Instruct-exl2-6.0bpw
-     draft_rope_scale: 1.0
-     draft_cache_mode: FP16 
+    draft_model_dir: $WORKSPACE/models
+    draft_model_name: $DRAFT_NAME
+    draft_rope_scale: 1.0
+    draft_cache_mode: FP16
 developer:
   cuda_malloc_backend: true
 TABBYCFG
@@ -154,12 +162,9 @@ step_download_model() {
 }
 
 step_download_draft() {
-    DRAFT_REPO=${DRAFT_REPO:-cgus/Qwen2.5-1.5B-Instruct-exl2}
-    DRAFT_BRANCH=${DRAFT_BRANCH:-6.5bpw-h8}
-    DRAFT_NAME=$(basename "$DRAFT_REPO")
-    HF_HUB_ENABLE_HF_TRANSFER=1 hf download "$DRAFT_REPO" \
-        --revision "$DRAFT_BRANCH" \
-        --local-dir "$WORKSPACE/models/$DRAFT_NAME"
+  HF_HUB_ENABLE_HF_TRANSFER=1 hf download "$DRAFT_REPO" \
+    --revision "$DRAFT_BRANCH" \
+    --local-dir "$WORKSPACE/models/$DRAFT_NAME"
 }
 
 
