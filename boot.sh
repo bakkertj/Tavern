@@ -162,6 +162,10 @@ step_download_model() {
 }
 
 step_download_draft() {
+  # `hf` lives in the ephemeral system Python and doesn't persist across pods.
+  # Install it here too so this step works even when download_model (which also
+  # installs it) was skipped because the main model was already on the volume.
+  pip install -U "huggingface_hub[hf_transfer]"
   HF_HUB_ENABLE_HF_TRANSFER=1 hf download "$DRAFT_REPO" \
     --revision "$DRAFT_BRANCH" \
     --local-dir "$WORKSPACE/models/$DRAFT_NAME"
