@@ -14,7 +14,9 @@ export PIP_CACHE_DIR=$WORKSPACE/pip_cache
 export NPM_CONFIG_CACHE=$WORKSPACE/npm_cache
 
 # Model downloaded into $WORKSPACE/models on first boot (override via pod env).
-MODEL_REPO=${MODEL_REPO:-DBMe/EVA-Qwen2.5-72B-v0.2-4.48bpw-h6-exl2}
+# (EVA-Qwen2.5-72B was the prior default; Magnum is less "short-story narrator"
+# and more conversational for RP. Set MODEL_REPO to swap back.)
+MODEL_REPO=${MODEL_REPO:-DBMe/magnum-v4-72b-4.47bpw-h6-exl2}
 MODEL_NAME=$(basename "$MODEL_REPO")
 
 # Draft model for speculative decoding. DRAFT_NAME is the local dir name and is
@@ -154,8 +156,8 @@ TABBYCFG
 }
 
 step_download_model() {
-  # exl2 weights for TabbyAPI live in a subdir of model_dir. This 72B 4.48bpw
-  # quant is ~40 GB -- make sure the volume has room. hf_transfer speeds it up.
+  # exl2 weights for TabbyAPI live in a subdir of model_dir. A 72B ~4.5bpw
+  # quant is ~43 GB -- make sure the volume has room. hf_transfer speeds it up.
   pip install -U "huggingface_hub[hf_transfer]"
   HF_HUB_ENABLE_HF_TRANSFER=1 hf download "$MODEL_REPO" \
     --local-dir "$WORKSPACE/models/$MODEL_NAME"
