@@ -140,8 +140,8 @@ model:
   model_dir: $WORKSPACE/models
   model_name: $MODEL_NAME
   inline_model_loading: true
-  max_seq_len: 16384
-  cache_mode: FP16
+  max_seq_len: 32768
+  cache_mode: Q8
   gpu_split_auto: true
   tensor_parallel: false   
   chunk_size: 2048
