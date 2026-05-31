@@ -16,15 +16,15 @@ export NPM_CONFIG_CACHE=$WORKSPACE/npm_cache
 # Model downloaded into $WORKSPACE/models on first boot (override via pod env).
 # (EVA-Qwen2.5-72B was the prior default; Magnum is less "short-story narrator"
 # and more conversational for RP. Set MODEL_REPO to swap back.)
-MODEL_REPO=${MODEL_REPO:-DBMe/magnum-v4-72b-4.47bpw-h6-exl2}
+MODEL_REPO=${MODEL_REPO:-TheDrummer/Behemoth-123B-v2.1}
 MODEL_NAME=$(basename "$MODEL_REPO")
 
 # Draft model for speculative decoding. DRAFT_NAME is the local dir name and is
 # the single source of truth shared by the download, the validator, and
 # config.yml. It includes the branch so it documents the quant and so changing
 # the branch points everything at a fresh dir.
-DRAFT_REPO=${DRAFT_REPO:-cgus/Qwen2.5-1.5B-Instruct-exl2}
-DRAFT_BRANCH=${DRAFT_BRANCH:-6.5bpw-h8}
+DRAFT_REPO=${DRAFT_REPO:-mistralai/Ministral-8B-Instruct-2410}
+DRAFT_BRANCH=${DRAFT_BRANCH:-main}
 DRAFT_NAME=${DRAFT_NAME:-$(basename "$DRAFT_REPO")-$DRAFT_BRANCH}
 
 ST_USERNAME=${ST_USERNAME:-admin}
