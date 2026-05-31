@@ -24,7 +24,7 @@ MODEL_NAME=$(basename "$MODEL_REPO")
 # the single source of truth shared by the download, the validator, and
 # config.yml. It includes the branch so it documents the quant and so changing
 # the branch points everything at a fresh dir.
-DRAFT_REPO=${DRAFT_REPO:-MetaphoricalCode/Ministral-8B-Instruct-2410-exl2}
+DRAFT_REPO=${DRAFT_REPO:-DBMe/Mistral-7B-Instruct-v0.3-exl2}
 DRAFT_BRANCH=${DRAFT_BRANCH:-6.0bpw}
 DRAFT_NAME=${DRAFT_NAME:-$(basename "$DRAFT_REPO")-$DRAFT_BRANCH}
 
