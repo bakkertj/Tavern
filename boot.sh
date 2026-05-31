@@ -145,7 +145,7 @@ model:
   cache_mode: Q8
   gpu_split_auto: true
   tensor_parallel: false   
-  chunk_size: 2048
+  chunk_size: 4096
   draft_model:
     draft_model_dir: $WORKSPACE/models
     draft_model_name: $DRAFT_NAME
