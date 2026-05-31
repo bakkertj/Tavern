@@ -16,15 +16,16 @@ export NPM_CONFIG_CACHE=$WORKSPACE/npm_cache
 # Model downloaded into $WORKSPACE/models on first boot (override via pod env).
 # (EVA-Qwen2.5-72B was the prior default; Magnum is less "short-story narrator"
 # and more conversational for RP. Set MODEL_REPO to swap back.)
-MODEL_REPO=${MODEL_REPO:-TheDrummer/Behemoth-123B-v2.1}
+MODEL_REPO=${MODEL_REPO:-ArtusDev/TheDrummer_Behemoth-X-123B-v2.1-EXL3}
+MODEL_BRANCH=${MODEL_BRANCH:-5.0bpw}
 MODEL_NAME=$(basename "$MODEL_REPO")
 
 # Draft model for speculative decoding. DRAFT_NAME is the local dir name and is
 # the single source of truth shared by the download, the validator, and
 # config.yml. It includes the branch so it documents the quant and so changing
 # the branch points everything at a fresh dir.
-DRAFT_REPO=${DRAFT_REPO:-mistralai/Ministral-8B-Instruct-2410}
-DRAFT_BRANCH=${DRAFT_BRANCH:-main}
+DRAFT_REPO=${DRAFT_REPO:-MetaphoricalCode/Ministral-8B-Instruct-2410-exl2}
+DRAFT_BRANCH=${DRAFT_BRANCH:-6.0bpw}
 DRAFT_NAME=${DRAFT_NAME:-$(basename "$DRAFT_REPO")-$DRAFT_BRANCH}
 
 ST_USERNAME=${ST_USERNAME:-admin}
@@ -160,6 +161,7 @@ step_download_model() {
   # quant is ~43 GB -- make sure the volume has room. hf_transfer speeds it up.
   pip install -U "huggingface_hub[hf_transfer]"
   HF_HUB_ENABLE_HF_TRANSFER=1 hf download "$MODEL_REPO" \
+    --revision "$MODEL_BRANCH" \
     --local-dir "$WORKSPACE/models/$MODEL_NAME"
 }
 
