@@ -16,8 +16,8 @@ export NPM_CONFIG_CACHE=$WORKSPACE/npm_cache
 # Model downloaded into $WORKSPACE/models on first boot (override via pod env).
 # (EVA-Qwen2.5-72B was the prior default; Magnum is less "short-story narrator"
 # and more conversational for RP. Set MODEL_REPO to swap back.)
-MODEL_REPO=${MODEL_REPO:-ArtusDev/TheDrummer_Behemoth-X-123B-v2.1-EXL3}
-MODEL_BRANCH=${MODEL_BRANCH:-5.0bpw_H6}
+MODEL_REPO=${MODEL_REPO:-BigHuggyD/TheDrummer_Behemoth-123B-v1_exl2_5.0bpw_h6}
+MODEL_BRANCH=${MODEL_BRANCH:-main}
 MODEL_NAME=$(basename "$MODEL_REPO")
 
 # Draft model for speculative decoding. DRAFT_NAME is the local dir name and is
