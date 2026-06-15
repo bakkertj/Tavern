@@ -136,7 +136,7 @@ network:
 logging:
   log_prompt: false
   log_generation_params: false
-  log_requests: true
+  log_requests: false
 model:
   model_dir: $WORKSPACE/models
   model_name: $MODEL_NAME
